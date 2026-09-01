@@ -339,11 +339,12 @@
         </div>
 
         <div class="join-card">
-          <b>Como os participantes entram:</b> envie este mesmo link para a turma (WhatsApp, e-mail ou QR code na tela) e peça para escolherem "Sou participante" ao abrir. Eles só verão a pergunta quando você clicar em Iniciar.
+          <b>Como os participantes entram:</b> envie este mesmo link para a turma (WhatsApp, e-mail ou QR code na tela). Eles caem direto na tela de nome e ficam aguardando você clicar em Iniciar.
         </div>
 
-        <div style="margin-top: 26px;">
+        <div style="margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap;">
           <button class="btn btn-primary" id="btnStartSession" type="button">Iniciar sessão</button>
+          <button class="btn btn-secondary" id="btnViewResultsSetup" type="button">Ver resultados agora</button>
         </div>
       </section>
 
@@ -604,7 +605,7 @@
     "topbarMeta", "pillRound", "btnEvolution",
     "viewConnecting", "viewUnavailable",
     "viewNameCapture", "nameInput", "btnNameContinue",
-    "viewPresenterSetup", "roundSeg", "modeSeg", "partInput", "partMinus", "partPlus", "btnStartSession",
+    "viewPresenterSetup", "roundSeg", "modeSeg", "partInput", "partMinus", "partPlus", "btnStartSession", "btnViewResultsSetup",
     "viewPresenterLive", "progressText", "respondCount", "qCard", "anchorBadge", "qNumber", "qTitle", "qContext",
     "optBars", "revealArea", "btnReveal", "conceptBox", "conceptText", "btnEndSession", "btnNext",
     "viewPresenterDone", "btnGoEvolutionFromDone", "btnNewSessionFromDone",
@@ -899,6 +900,7 @@
 
   el.btnGoEvolutionFromDone.addEventListener("click", function () { showEvolution(); });
   el.btnEvolution.addEventListener("click", function () { showEvolution(); });
+  el.btnViewResultsSetup.addEventListener("click", function () { showEvolution(); });
   el.btnBackFromEvolution.addEventListener("click", function () { renderPresenter(); });
 
   function escapeHtml(s) {
