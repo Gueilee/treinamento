@@ -223,7 +223,27 @@
   }
 
   /* ---------- evolution ---------- */
-  .evo-group { background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 16px; padding: 22px 24px; margin-bottom: 14px; }
+  .evo-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  @media (max-width: 620px) { .evo-stats-row { grid-template-columns: 1fr; } }
+  .stat-tile { background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 16px; padding: 20px 22px; }
+  .stat-tile .stat-value { font-family: var(--font-display); font-size: 32px; line-height: 1; color: var(--vd-purple); font-variant-numeric: tabular-nums; }
+  .stat-tile.wrong .stat-value { color: var(--vd-pink); }
+  .stat-tile .stat-label { font-family: var(--font-bold); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--vd-muted); margin-top: 8px; }
+
+  .evo-leaderboard { background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 16px; padding: 22px 24px; margin-bottom: 18px; }
+  .lb-list { display: flex; flex-direction: column; margin-top: 12px; }
+  .lb-row { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 12px; padding: 10px 2px; border-bottom: 1px solid var(--vd-panel); }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank { font-family: var(--font-display); font-size: 13px; color: var(--vd-muted); }
+  .lb-rank.top1 { color: var(--vd-pink); }
+  .lb-name { font-family: var(--font-bold); font-size: 14.5px; color: var(--vd-ink); }
+  .lb-score { font-family: var(--font-bold); font-size: 13px; color: var(--vd-purple); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .evo-group { background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 16px; padding: 22px 24px; margin-bottom: 14px; cursor: pointer; transition: border-color 0.15s ease; }
+  .evo-group:hover { border-color: var(--vd-purple); }
+  .evo-group-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+  .evo-chevron { font-family: var(--font-display); font-size: 20px; color: var(--vd-muted); flex-shrink: 0; margin-top: 2px; transition: transform 0.15s ease; }
+  .evo-group.open .evo-chevron { transform: rotate(90deg); color: var(--vd-purple); }
   .evo-q-title { font-family: var(--font-bold); font-size: 15px; color: var(--vd-ink); margin: 0 0 4px; }
   .evo-q-concept { font-size: 12.5px; color: var(--vd-muted); margin: 0 0 16px; max-width: 68ch; line-height: 1.5; }
   .bar-row { display: grid; grid-template-columns: 58px 1fr 100px; align-items: center; gap: 12px; margin-bottom: 9px; }
@@ -235,6 +255,20 @@
   .bar-fill.empty { background: repeating-linear-gradient(135deg, var(--vd-border), var(--vd-border) 6px, transparent 6px, transparent 12px); width: 100% !important; }
   .bar-value { font-family: var(--font-bold); font-size: 12.5px; color: var(--vd-ink); font-variant-numeric: tabular-nums; text-align: right; }
   .bar-value.empty { color: var(--vd-muted); font-family: var(--font-book); font-style: italic; }
+
+  .evo-detail { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--vd-border); cursor: default; }
+  .evo-group.open .evo-detail { display: block; }
+  .evo-detail-round { margin-bottom: 16px; }
+  .evo-detail-round:last-child { margin-bottom: 0; }
+  .evo-detail-round-label { font-family: var(--font-bold); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--vd-muted); margin: 0 0 10px; }
+  .evo-detail-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px) { .evo-detail-cols { grid-template-columns: 1fr; } }
+  .evo-name-col-title { font-family: var(--font-bold); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 8px; }
+  .evo-name-col-title.correct { color: var(--vd-purple); }
+  .evo-name-col-title.wrong { color: var(--vd-pink); }
+  .evo-name-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .evo-name-list li { font-size: 13.5px; padding: 7px 11px; border-radius: 8px; background: var(--vd-panel); color: var(--vd-ink); }
+  .evo-empty-note { font-size: 12.5px; color: var(--vd-muted); font-style: italic; margin: 0; }
 
   footer.foot { padding: 18px clamp(18px, 4vw, 40px) 30px; text-align: center; font-size: 11.5px; color: var(--vd-muted); }
 
@@ -313,10 +347,10 @@
 
         <div style="margin-top: 26px;">
           <div class="field">
-            <p class="field-label">Rodada</p>
+            <p class="field-label">Sessão</p>
             <div class="segmented" id="roundSeg">
-              <button class="seg-btn active" data-round="manha" type="button">Manhã</button>
-              <button class="seg-btn" data-round="tarde" type="button">Tarde</button>
+              <button class="seg-btn active" data-round="manha" type="button">1ª Sessão</button>
+              <button class="seg-btn" data-round="tarde" type="button">2ª Sessão</button>
             </div>
           </div>
           <div class="field">
@@ -383,7 +417,7 @@
           <span class="emoji">✅</span>
           <h1>Sessão encerrada</h1>
           <p class="lede" style="margin:0 auto 24px;">Bom trabalho. Veja a evolução ou inicie a próxima rodada.</p>
-          <button class="btn btn-primary" id="btnGoEvolutionFromDone" type="button">Ver evolução Manhã × Tarde</button>
+          <button class="btn btn-primary" id="btnGoEvolutionFromDone" type="button">Ver evolução 1ª × 2ª Sessão</button>
           <div style="height:12px;"></div>
           <button class="btn btn-secondary" id="btnNewSessionFromDone" type="button">Iniciar nova sessão</button>
         </div>
@@ -392,7 +426,7 @@
       <!-- ---------- PRESENTER: EVOLUTION ---------- -->
       <section id="viewEvolution" hidden>
         <p class="eyebrow">Fechamento</p>
-        <h1>Evolução — Manhã × Tarde</h1>
+        <h1>Evolução — 1ª × 2ª Sessão</h1>
         <p class="lede">Comparativo pergunta a pergunta entre as duas rodadas. Projete esta tela para a turma ver a própria evolução.</p>
         <div id="evoList" style="margin-top:26px;"></div>
         <button class="btn btn-secondary" id="btnBackFromEvolution" type="button">← Voltar</button>
@@ -778,7 +812,7 @@
     }
     // phase === 'question'
     el.pillRound.hidden = false;
-    el.pillRound.textContent = presenterSession.round === "manha" ? "Rodada · Manhã" : "Rodada · Tarde";
+    el.pillRound.textContent = presenterSession.round === "manha" ? "1ª Sessão" : "2ª Sessão";
     el.pillRound.className = "pill " + (presenterSession.round === "manha" ? "round-manha" : "round-tarde");
     showView("viewPresenterLive");
     renderPresenterQuestion();
@@ -907,55 +941,148 @@
   el.btnEvolution.addEventListener("click", function () { showEvolution(); });
   el.btnBackFromEvolution.addEventListener("click", function () { renderPresenter(); });
 
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function roundLabel(roundKey) { return roundKey === "manha" ? "1ª Sessão" : "2ª Sessão"; }
+
   function showEvolution() {
     showView("viewEvolution");
     el.evoList.innerHTML = "<p style='color:var(--vd-muted);font-size:14px;'>Carregando…</p>";
-    supabase.from("answers").select("round, question_id, is_correct")
-      .then(function (res) {
-        var rows = res.data || [];
-        var data = { manha: {}, tarde: {} };
-        rows.forEach(function (r) {
-          var bucket = data[r.round];
-          if (!bucket) return;
-          if (!bucket[r.question_id]) bucket[r.question_id] = { correct: 0, total: 0 };
-          bucket[r.question_id].total++;
-          if (r.is_correct) bucket[r.question_id].correct++;
-        });
-        el.evoList.innerHTML = "";
-        QUESTIONS.forEach(function (q) {
-          var group = document.createElement("div");
-          group.className = "evo-group";
-          group.innerHTML = '<p class="evo-q-title">Q' + q.id + " — " + q.title + '</p><p class="evo-q-concept">' + q.concept + "</p>";
-          ["manha", "tarde"].forEach(function (roundKey) {
-            var pq = data[roundKey][q.id];
-            var row = document.createElement("div");
-            row.className = "bar-row";
-            var tag = document.createElement("span");
-            tag.className = "bar-tag";
-            tag.textContent = roundKey === "manha" ? "Manhã" : "Tarde";
-            var track = document.createElement("div");
-            track.className = "bar-track";
-            var fill = document.createElement("div");
-            var value = document.createElement("span");
-            value.className = "bar-value";
-            if (!pq || !pq.total) {
-              fill.className = "bar-fill empty";
-              value.classList.add("empty");
-              value.textContent = "não registrado";
-            } else {
-              var pct = Math.round((pq.correct / pq.total) * 100);
-              fill.className = "bar-fill " + roundKey;
-              fill.style.width = pct + "%";
-              value.textContent = pct + "% (" + pq.correct + "/" + pq.total + ")";
-            }
-            track.appendChild(fill);
-            row.appendChild(tag); row.appendChild(track); row.appendChild(value);
-            group.appendChild(row);
-          });
-          el.evoList.appendChild(group);
-        });
+    Promise.all([
+      supabase.from("participants").select("id, name"),
+      supabase.from("answers").select("round, question_id, is_correct, participant_id")
+    ]).then(function (results) {
+      var participantsRows = results[0].data || [];
+      var answers = results[1].data || [];
+      var nameById = {};
+      participantsRows.forEach(function (p) { nameById[p.id] = p.name; });
+
+      var totalCorrect = 0, totalWrong = 0;
+      var scoreByParticipant = {};
+      var perQuestion = {};
+      QUESTIONS.forEach(function (q) {
+        perQuestion[q.id] = {
+          manha: { correct: 0, total: 0, correctNames: [], wrongNames: [] },
+          tarde: { correct: 0, total: 0, correctNames: [], wrongNames: [] }
+        };
       });
+
+      answers.forEach(function (a) {
+        if (a.is_correct) totalCorrect++; else totalWrong++;
+
+        if (!scoreByParticipant[a.participant_id]) scoreByParticipant[a.participant_id] = { correct: 0, total: 0 };
+        scoreByParticipant[a.participant_id].total++;
+        if (a.is_correct) scoreByParticipant[a.participant_id].correct++;
+
+        var bucket = perQuestion[a.question_id] && perQuestion[a.question_id][a.round];
+        if (!bucket) return;
+        bucket.total++;
+        var name = nameById[a.participant_id] || "Participante";
+        if (a.is_correct) { bucket.correct++; bucket.correctNames.push(name); }
+        else { bucket.wrongNames.push(name); }
+      });
+
+      var leaderboard = Object.keys(scoreByParticipant).map(function (pid) {
+        return { name: nameById[pid] || "Participante", correct: scoreByParticipant[pid].correct, total: scoreByParticipant[pid].total };
+      }).sort(function (a, b) { return b.correct - a.correct || b.total - a.total; });
+
+      el.evoList.innerHTML = "";
+
+      var statsRow = document.createElement("div");
+      statsRow.className = "evo-stats-row";
+      statsRow.innerHTML =
+        '<div class="stat-tile"><div class="stat-value">' + participantsRows.length + '</div><div class="stat-label">Participantes</div></div>' +
+        '<div class="stat-tile"><div class="stat-value">' + totalCorrect + '</div><div class="stat-label">Respostas certas</div></div>' +
+        '<div class="stat-tile wrong"><div class="stat-value">' + totalWrong + '</div><div class="stat-label">Respostas erradas</div></div>';
+      el.evoList.appendChild(statsRow);
+
+      var lb = document.createElement("div");
+      lb.className = "evo-leaderboard";
+      var lbRowsHtml = leaderboard.length
+        ? leaderboard.map(function (p, i) {
+            return '<div class="lb-row"><span class="lb-rank' + (i === 0 ? " top1" : "") + '">' + (i + 1) + "º</span>" +
+              '<span class="lb-name">' + escapeHtml(p.name) + "</span>" +
+              '<span class="lb-score">' + p.correct + "/" + p.total + " acertos</span></div>";
+          }).join("")
+        : '<p class="evo-empty-note">Ninguém respondeu ainda.</p>';
+      lb.innerHTML = '<p class="field-label">Ranking de pontuação</p><div class="lb-list">' + lbRowsHtml + "</div>";
+      el.evoList.appendChild(lb);
+
+      QUESTIONS.forEach(function (q) {
+        var group = document.createElement("div");
+        group.className = "evo-group";
+
+        var head = document.createElement("div");
+        head.className = "evo-group-head";
+        head.innerHTML =
+          '<div><p class="evo-q-title">Q' + q.id + " — " + q.title + '</p><p class="evo-q-concept">' + q.concept + "</p></div>" +
+          '<span class="evo-chevron">›</span>';
+        group.appendChild(head);
+
+        ["manha", "tarde"].forEach(function (roundKey) {
+          var pq = perQuestion[q.id][roundKey];
+          var row = document.createElement("div");
+          row.className = "bar-row";
+          var tag = document.createElement("span");
+          tag.className = "bar-tag";
+          tag.textContent = roundLabel(roundKey);
+          var track = document.createElement("div");
+          track.className = "bar-track";
+          var fill = document.createElement("div");
+          var value = document.createElement("span");
+          value.className = "bar-value";
+          if (!pq.total) {
+            fill.className = "bar-fill empty";
+            value.classList.add("empty");
+            value.textContent = "não registrado";
+          } else {
+            var pct = Math.round((pq.correct / pq.total) * 100);
+            fill.className = "bar-fill " + roundKey;
+            fill.style.width = pct + "%";
+            value.textContent = pct + "% (" + pq.correct + "/" + pq.total + ")";
+          }
+          track.appendChild(fill);
+          row.appendChild(tag); row.appendChild(track); row.appendChild(value);
+          group.appendChild(row);
+        });
+
+        var detail = document.createElement("div");
+        detail.className = "evo-detail";
+        ["manha", "tarde"].forEach(function (roundKey) {
+          var pq = perQuestion[q.id][roundKey];
+          if (!pq.total) return;
+          var block = document.createElement("div");
+          block.className = "evo-detail-round";
+          block.innerHTML =
+            '<p class="evo-detail-round-label">' + roundLabel(roundKey) + '</p>' +
+            '<div class="evo-detail-cols">' +
+              '<div><p class="evo-name-col-title correct">Acertaram (' + pq.correctNames.length + ')</p><ul class="evo-name-list">' +
+                (pq.correctNames.length ? pq.correctNames.map(function (n) { return "<li>" + escapeHtml(n) + "</li>"; }).join("") : '<li class="evo-empty-note">Ninguém</li>') +
+              "</ul></div>" +
+              '<div><p class="evo-name-col-title wrong">Erraram (' + pq.wrongNames.length + ')</p><ul class="evo-name-list">' +
+                (pq.wrongNames.length ? pq.wrongNames.map(function (n) { return "<li>" + escapeHtml(n) + "</li>"; }).join("") : '<li class="evo-empty-note">Ninguém</li>') +
+              "</ul></div>" +
+            "</div>";
+          detail.appendChild(block);
+        });
+        if (!detail.children.length) {
+          detail.innerHTML = '<p class="evo-empty-note">Sem respostas registradas ainda.</p>';
+        }
+        group.appendChild(detail);
+
+        el.evoList.appendChild(group);
+      });
+    });
   }
+
+  el.evoList.addEventListener("click", function (e) {
+    var group = e.target.closest(".evo-group");
+    if (group) group.classList.toggle("open");
+  });
 
   // ================= PARTICIPANT =================
 
@@ -995,7 +1122,7 @@
     }
 
     el.pillRound.hidden = false;
-    el.pillRound.textContent = participantSession.round === "manha" ? "Rodada · Manhã" : "Rodada · Tarde";
+    el.pillRound.textContent = participantSession.round === "manha" ? "1ª Sessão" : "2ª Sessão";
     el.pillRound.className = "pill " + (participantSession.round === "manha" ? "round-manha" : "round-tarde");
     showView("viewParticipantQuestion");
     renderParticipantQuestion();
