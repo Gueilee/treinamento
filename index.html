@@ -393,7 +393,7 @@
       <section id="viewEvolution" hidden>
         <p class="eyebrow">Fechamento</p>
         <h1>Evolução — Manhã × Tarde</h1>
-        <p class="lede">Comparativo das três perguntas-âncora. Projete esta tela para a turma ver a própria evolução.</p>
+        <p class="lede">Comparativo pergunta a pergunta entre as duas rodadas. Projete esta tela para a turma ver a própria evolução.</p>
         <div id="evoList" style="margin-top:26px;"></div>
         <button class="btn btn-secondary" id="btnBackFromEvolution" type="button">← Voltar</button>
       </section>
@@ -582,7 +582,6 @@
 
   var QUESTIONS_BY_ID = {};
   QUESTIONS.forEach(function (q) { QUESTIONS_BY_ID[q.id] = q; });
-  var ANCHOR_IDS = QUESTIONS.filter(function (q) { return q.anchor; }).map(function (q) { return q.id; });
   var LETTERS = ["A", "B", "C", "D"];
 
   function genId() {
@@ -911,7 +910,7 @@
   function showEvolution() {
     showView("viewEvolution");
     el.evoList.innerHTML = "<p style='color:var(--vd-muted);font-size:14px;'>Carregando…</p>";
-    supabase.from("answers").select("round, question_id, is_correct").in("question_id", ANCHOR_IDS)
+    supabase.from("answers").select("round, question_id, is_correct")
       .then(function (res) {
         var rows = res.data || [];
         var data = { manha: {}, tarde: {} };
@@ -923,13 +922,12 @@
           if (r.is_correct) bucket[r.question_id].correct++;
         });
         el.evoList.innerHTML = "";
-        ANCHOR_IDS.forEach(function (id) {
-          var q = QUESTIONS_BY_ID[id];
+        QUESTIONS.forEach(function (q) {
           var group = document.createElement("div");
           group.className = "evo-group";
           group.innerHTML = '<p class="evo-q-title">Q' + q.id + " — " + q.title + '</p><p class="evo-q-concept">' + q.concept + "</p>";
           ["manha", "tarde"].forEach(function (roundKey) {
-            var pq = data[roundKey][id];
+            var pq = data[roundKey][q.id];
             var row = document.createElement("div");
             row.className = "bar-row";
             var tag = document.createElement("span");
