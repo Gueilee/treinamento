@@ -243,7 +243,7 @@
   .evo-group.open .evo-chevron { transform: rotate(90deg); color: var(--vd-purple); }
   .evo-q-title { font-family: var(--font-bold); font-size: 15px; color: var(--vd-ink); margin: 0 0 4px; }
   .evo-q-concept { font-size: 12.5px; color: var(--vd-muted); margin: 0 0 16px; max-width: 68ch; line-height: 1.5; }
-  .bar-row { display: grid; grid-template-columns: 58px 1fr 100px; align-items: center; gap: 12px; margin-bottom: 9px; }
+  .bar-row { display: grid; grid-template-columns: 58px 1fr 140px; align-items: center; gap: 12px; margin-bottom: 9px; }
   .bar-tag { font-family: var(--font-bold); font-size: 12px; color: var(--vd-muted); }
   .bar-track { height: 20px; background: var(--vd-panel); border-radius: 999px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 999px; transition: width 0.5s ease; }
@@ -1026,7 +1026,7 @@
             var pct = Math.round((pq.correct / pq.total) * 100);
             fill.className = "bar-fill " + roundKey;
             fill.style.width = pct + "%";
-            value.textContent = pct + "% (" + pq.correct + "/" + pq.total + ")";
+            value.textContent = pct + "% · " + pq.correct + "/" + pq.total + " acertaram";
           }
           track.appendChild(fill);
           row.appendChild(tag); row.appendChild(track); row.appendChild(value);
