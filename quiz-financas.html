@@ -1,0 +1,1072 @@
+<title>Quiz Finanças Ao Vivo</title>
+<style>
+  :root {
+    --vd-purple: #422C75;
+    --vd-purple-deep: #2B1C52;
+    --vd-offwhite: #FFFCF8;
+    --vd-pink: #FF2F69;
+    --vd-white: #FFFFFF;
+    --vd-panel: #F4EFFA;
+    --vd-panel-strong: #EBE1F7;
+    --vd-border: #E0D3F1;
+    --vd-muted: #6E6087;
+    --vd-ink: #241A3B;
+
+    --font-display: 'Nexa Text Heavy', 'Helvetica Neue', Arial, sans-serif;
+    --font-bold: 'Nexa Text Bold', 'Helvetica Neue', Arial, sans-serif;
+    --font-book: 'Nexa Text Book', 'Helvetica Neue', Arial, sans-serif;
+
+    background: var(--vd-offwhite);
+    color: var(--vd-ink);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--vd-offwhite);
+    color: var(--vd-ink);
+    font-family: var(--font-book);
+    -webkit-font-smoothing: antialiased;
+  }
+  [hidden] { display: none !important; }
+  button { font-family: inherit; }
+
+  .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px clamp(18px, 4vw, 40px);
+    border-bottom: 1px solid var(--vd-border);
+    background: var(--vd-white);
+  }
+  .wordmark {
+    font-family: var(--font-display); font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    font-size: 14px; color: var(--vd-purple); white-space: nowrap;
+  }
+  .wordmark span { color: var(--vd-pink); }
+  .topbar-meta { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+
+  .pill {
+    font-family: var(--font-bold); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 5px 11px; border-radius: 999px; background: var(--vd-panel); color: var(--vd-purple);
+    border: 1px solid var(--vd-border); white-space: nowrap;
+  }
+  .pill.round-manha { background: var(--vd-purple); color: var(--vd-white); border-color: var(--vd-purple); }
+  .pill.round-tarde { background: var(--vd-pink); color: var(--vd-white); border-color: var(--vd-pink); }
+  .pill.live { background: var(--vd-white); color: var(--vd-pink); border-color: var(--vd-pink); }
+  .pill.live::before { content: '●'; margin-right: 5px; }
+
+  .btn-ghost {
+    font-family: var(--font-bold); font-size: 12.5px; background: none;
+    border: 1px solid var(--vd-border); color: var(--vd-purple);
+    padding: 6px 13px; border-radius: 999px; cursor: pointer;
+  }
+  .btn-ghost:hover { background: var(--vd-panel); border-color: var(--vd-purple); }
+
+  main { flex: 1; display: flex; justify-content: center; padding: clamp(20px, 5vw, 52px) clamp(16px, 4vw, 40px) 56px; }
+  .stage { width: 100%; max-width: 760px; }
+  .stage.wide { max-width: 980px; }
+
+  .btn {
+    font-family: var(--font-bold); font-size: 15px; border: none; border-radius: 10px;
+    padding: 14px 24px; cursor: pointer; transition: transform 0.12s ease, background 0.15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--vd-purple); color: var(--vd-white); box-shadow: 0 6px 16px rgba(66,44,117,0.25); }
+  .btn-primary:hover { background: var(--vd-purple-deep); }
+  .btn-secondary { background: var(--vd-panel); color: var(--vd-purple); border: 1px solid var(--vd-border); }
+  .btn-secondary:hover { background: var(--vd-panel-strong); }
+  .btn-pink { background: var(--vd-pink); color: var(--vd-white); box-shadow: 0 6px 16px rgba(255,47,105,0.25); }
+  .btn-pink:hover { filter: brightness(0.94); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+  .btn-block { width: 100%; }
+
+  .eyebrow {
+    font-family: var(--font-bold); font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--vd-pink); margin: 0 0 10px;
+  }
+  h1 {
+    font-family: var(--font-display); font-size: clamp(26px, 4vw, 36px); line-height: 1.15;
+    color: var(--vd-purple); margin: 0 0 12px; text-wrap: balance;
+  }
+  .lede { font-size: 16.5px; line-height: 1.55; color: var(--vd-muted); max-width: 62ch; margin: 0; }
+
+  /* ---------- role chooser ---------- */
+  .role-grid { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 620px) { .role-grid { grid-template-columns: 1fr; } }
+  .role-card {
+    background: var(--vd-white); border: 1.5px solid var(--vd-border); border-radius: 16px;
+    padding: 26px 24px; text-align: left; cursor: pointer; transition: all 0.15s ease;
+  }
+  .role-card:hover { border-color: var(--vd-purple); box-shadow: 0 8px 20px rgba(66,44,117,0.1); }
+  .role-card .emoji { font-size: 30px; display: block; margin-bottom: 12px; }
+  .role-card h3 { font-family: var(--font-display); font-size: 18px; color: var(--vd-purple); margin: 0 0 6px; }
+  .role-card p { font-size: 13.5px; color: var(--vd-muted); line-height: 1.5; margin: 0; }
+
+  /* ---------- setup ---------- */
+  .field {
+    background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 14px;
+    padding: 20px 22px; margin-bottom: 16px;
+  }
+  .field-label {
+    font-family: var(--font-bold); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--vd-purple); margin: 0 0 12px;
+  }
+  .segmented { display: flex; gap: 8px; flex-wrap: wrap; }
+  .seg-btn {
+    font-family: var(--font-bold); font-size: 14px; padding: 10px 16px; border-radius: 9px;
+    border: 1.5px solid var(--vd-border); background: var(--vd-white); color: var(--vd-ink); cursor: pointer;
+  }
+  .seg-btn.active { background: var(--vd-purple); border-color: var(--vd-purple); color: var(--vd-white); }
+  .seg-btn.active.pink { background: var(--vd-pink); border-color: var(--vd-pink); }
+
+  .stepper { display: flex; align-items: center; border: 1.5px solid var(--vd-border); border-radius: 9px; overflow: hidden; width: fit-content; }
+  .stepper button { width: 38px; height: 40px; border: none; background: var(--vd-panel); color: var(--vd-purple); font-family: var(--font-bold); font-size: 18px; cursor: pointer; }
+  .stepper button:hover { background: var(--vd-panel-strong); }
+  .stepper input { width: 64px; height: 40px; text-align: center; border: none; border-left: 1.5px solid var(--vd-border); border-right: 1.5px solid var(--vd-border); font-family: var(--font-bold); font-size: 16px; font-variant-numeric: tabular-nums; color: var(--vd-ink); }
+  .stepper input:focus { outline: none; }
+
+  .text-input {
+    width: 100%; font-family: var(--font-book); font-size: 16px;
+    padding: 12px 14px; border: 1.5px solid var(--vd-border); border-radius: 9px;
+    color: var(--vd-ink); background: var(--vd-white);
+  }
+  .text-input:focus { outline: none; border-color: var(--vd-purple); }
+
+  .join-card {
+    margin-top: 22px; background: var(--vd-panel); border-radius: 14px; padding: 18px 22px;
+    font-size: 14px; color: var(--vd-ink); line-height: 1.6;
+  }
+  .join-card b { color: var(--vd-purple); }
+  .join-code {
+    font-family: var(--font-display); font-size: 15px; color: var(--vd-purple);
+    background: var(--vd-white); border: 1px dashed var(--vd-border); border-radius: 8px;
+    padding: 6px 10px; display: inline-block; margin-top: 4px; word-break: break-all;
+  }
+
+  /* ---------- progress / chips ---------- */
+  .progress-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+  .progress-text { font-family: var(--font-bold); font-size: 13px; color: var(--vd-muted); }
+  .respond-count { font-family: var(--font-bold); font-size: 13px; color: var(--vd-pink); }
+
+  /* ---------- question card ---------- */
+  .q-card { background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 18px; padding: clamp(22px, 4vw, 34px); }
+  .q-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .badge-anchor { font-family: var(--font-bold); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--vd-white); background: var(--vd-pink); padding: 4px 10px; border-radius: 999px; }
+  .q-number { font-family: var(--font-display); font-size: 14px; color: var(--vd-purple); }
+  .q-title { font-family: var(--font-display); font-size: clamp(20px, 3vw, 27px); line-height: 1.22; color: var(--vd-ink); margin: 0 0 12px; text-wrap: balance; }
+  .q-context { font-size: 15px; line-height: 1.6; color: var(--vd-muted); margin: 0 0 22px; max-width: 70ch; }
+
+  /* option bars, presenter (live tally) */
+  .opt-bars { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+  .opt-bar-row { display: grid; grid-template-columns: 30px 1fr 56px; align-items: center; gap: 12px; }
+  .opt-letter {
+    font-family: var(--font-display); font-size: 13px; width: 28px; height: 28px; border-radius: 8px;
+    background: var(--vd-panel); color: var(--vd-purple); display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--vd-border); flex-shrink: 0;
+  }
+  .opt-track { position: relative; height: 40px; border-radius: 10px; background: var(--vd-panel); overflow: hidden; }
+  .opt-fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--vd-panel-strong); border-radius: 10px; transition: width 0.4s ease, background 0.3s ease; }
+  .opt-fill.correct { background: var(--vd-purple); }
+  .opt-text { position: relative; z-index: 1; font-size: 14px; line-height: 1.3; padding: 0 14px; height: 100%; display: flex; align-items: center; color: var(--vd-ink); }
+  .opt-fill.correct ~ .opt-text, .opt-text.on-correct { color: var(--vd-white); font-family: var(--font-bold); }
+  .opt-count { font-family: var(--font-bold); font-size: 13px; color: var(--vd-muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .concept-box {
+    margin-top: 4px; background: var(--vd-panel); border-left: 4px solid var(--vd-purple);
+    border-radius: 4px 12px 12px 4px; padding: 16px 20px; font-size: 14.5px; line-height: 1.6; color: var(--vd-ink); max-width: 72ch;
+  }
+  .concept-box b { font-family: var(--font-bold); color: var(--vd-purple); display: block; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+
+  .nav-row { margin-top: 26px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+  /* ---------- participant tap options ---------- */
+  .tap-options { display: flex; flex-direction: column; gap: 12px; }
+  .tap-opt {
+    display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; border-radius: 14px;
+    border: 2px solid var(--vd-border); background: var(--vd-white); text-align: left; cursor: pointer;
+    transition: all 0.15s ease; width: 100%;
+  }
+  .tap-opt:active { transform: scale(0.98); }
+  .tap-opt.selected { border-color: var(--vd-purple); background: var(--vd-panel); }
+  .tap-opt.locked { cursor: default; opacity: 0.65; }
+  .tap-opt.locked.selected { opacity: 1; }
+  .tap-opt.reveal-correct { border-color: var(--vd-purple); background: var(--vd-purple); }
+  .tap-opt.reveal-correct .opt-letter { background: var(--vd-white); color: var(--vd-purple); }
+  .tap-opt.reveal-correct .tap-opt-text { color: var(--vd-white); font-family: var(--font-bold); }
+  .tap-opt.reveal-wrong-picked { border-color: var(--vd-pink); }
+  .tap-opt-text { font-size: 16px; line-height: 1.45; color: var(--vd-ink); padding-top: 2px; }
+
+  .status-banner {
+    margin-bottom: 18px; padding: 12px 16px; border-radius: 10px; background: var(--vd-panel);
+    color: var(--vd-purple); font-family: var(--font-bold); font-size: 13.5px; text-align: center;
+  }
+  .status-banner.pink { background: var(--vd-pink); color: var(--vd-white); }
+
+  .center-stage { text-align: center; padding: 60px 20px; }
+  .center-stage .emoji { font-size: 44px; display: block; margin-bottom: 18px; }
+  .spinner {
+    width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--vd-border);
+    border-top-color: var(--vd-purple); margin: 0 auto 18px; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .score-pill {
+    display: inline-block; margin-top: 18px; font-family: var(--font-display); font-size: 22px;
+    color: var(--vd-purple); background: var(--vd-panel); padding: 10px 22px; border-radius: 999px;
+  }
+
+  /* ---------- evolution ---------- */
+  .evo-group { background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 16px; padding: 22px 24px; margin-bottom: 14px; }
+  .evo-q-title { font-family: var(--font-bold); font-size: 15px; color: var(--vd-ink); margin: 0 0 4px; }
+  .evo-q-concept { font-size: 12.5px; color: var(--vd-muted); margin: 0 0 16px; max-width: 68ch; line-height: 1.5; }
+  .bar-row { display: grid; grid-template-columns: 58px 1fr 100px; align-items: center; gap: 12px; margin-bottom: 9px; }
+  .bar-tag { font-family: var(--font-bold); font-size: 12px; color: var(--vd-muted); }
+  .bar-track { height: 20px; background: var(--vd-panel); border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; transition: width 0.5s ease; }
+  .bar-fill.manha { background: var(--vd-purple); }
+  .bar-fill.tarde { background: var(--vd-pink); }
+  .bar-fill.empty { background: repeating-linear-gradient(135deg, var(--vd-border), var(--vd-border) 6px, transparent 6px, transparent 12px); width: 100% !important; }
+  .bar-value { font-family: var(--font-bold); font-size: 12.5px; color: var(--vd-ink); font-variant-numeric: tabular-nums; text-align: right; }
+  .bar-value.empty { color: var(--vd-muted); font-family: var(--font-book); font-style: italic; }
+
+  footer.foot { padding: 18px clamp(18px, 4vw, 40px) 30px; text-align: center; font-size: 11.5px; color: var(--vd-muted); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <div class="topbar">
+    <div class="wordmark">vendemmia<span>·</span>finanças</div>
+    <div class="topbar-meta" id="topbarMeta" hidden>
+      <span class="pill live" id="pillLive">Ao vivo</span>
+      <span class="pill" id="pillRound"></span>
+      <button class="btn-ghost" id="btnEvolution" type="button" hidden>Evolução</button>
+      <button class="btn-ghost" id="btnSwitchRole" type="button">Trocar papel</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="stage" id="stage">
+
+      <!-- ---------- CONNECTING ---------- -->
+      <section id="viewConnecting">
+        <div class="center-stage">
+          <div class="spinner"></div>
+          <p class="lede">Conectando…</p>
+        </div>
+      </section>
+
+      <!-- ---------- UNAVAILABLE ---------- -->
+      <section id="viewUnavailable" hidden>
+        <div class="center-stage">
+          <span class="emoji">📡</span>
+          <h1>Não foi possível conectar</h1>
+          <p class="lede" style="margin: 0 auto;">Não conseguimos falar com o banco de dados do quiz agora. Recarregue a página; se o problema continuar, avise quem organizou o treinamento.</p>
+        </div>
+      </section>
+
+      <!-- ---------- ROLE CHOOSER ---------- -->
+      <section id="viewRoleChooser" hidden>
+        <p class="eyebrow">Módulo 0 · Diagnóstico ao vivo</p>
+        <h1>Quiz Finanças para Não Financeiros</h1>
+        <p class="lede">Todo mundo responde pelo próprio celular; o resultado aparece ao vivo na tela do apresentador.</p>
+        <div class="role-grid">
+          <button class="role-card" id="cardPresenter" type="button">
+            <span class="emoji">🖥️</span>
+            <h3>Sou o apresentador</h3>
+            <p>Abra aqui no notebook conectado ao projetor. Você controla as perguntas e vê os resultados chegando ao vivo.</p>
+          </button>
+          <button class="role-card" id="cardParticipant" type="button">
+            <span class="emoji">📱</span>
+            <h3>Sou participante</h3>
+            <p>Abra no seu celular. Toque na alternativa quando a pergunta aparecer na tela.</p>
+          </button>
+        </div>
+      </section>
+
+      <!-- ---------- PARTICIPANT: NAME CAPTURE ---------- -->
+      <section id="viewNameCapture" hidden>
+        <p class="eyebrow">Antes de começar</p>
+        <h1>Como podemos te chamar?</h1>
+        <p class="lede">Seu nome fica junto das suas respostas, só para o apresentador acompanhar o resultado por pessoa.</p>
+        <div class="field" style="margin-top: 26px;">
+          <p class="field-label">Seu nome</p>
+          <input type="text" id="nameInput" class="text-input" placeholder="Nome completo" maxlength="80" autocomplete="name">
+        </div>
+        <button class="btn btn-primary btn-block" id="btnNameContinue" type="button">Entrar no quiz</button>
+      </section>
+
+      <!-- ---------- PRESENTER: SETUP ---------- -->
+      <section id="viewPresenterSetup" hidden>
+        <p class="eyebrow">Painel do apresentador</p>
+        <h1>Iniciar sessão</h1>
+        <p class="lede">Configure a rodada e clique em iniciar — a pergunta aparece na hora nos celulares de quem já entrou pelo link.</p>
+
+        <div style="margin-top: 26px;">
+          <div class="field">
+            <p class="field-label">Rodada</p>
+            <div class="segmented" id="roundSeg">
+              <button class="seg-btn active" data-round="manha" type="button">Manhã</button>
+              <button class="seg-btn" data-round="tarde" type="button">Tarde</button>
+            </div>
+          </div>
+          <div class="field">
+            <p class="field-label">Modo</p>
+            <div class="segmented" id="modeSeg">
+              <button class="seg-btn active" data-mode="completo" type="button">Quiz completo · 10 perguntas</button>
+              <button class="seg-btn" data-mode="ancora" type="button">Modo âncora · 3 perguntas</button>
+            </div>
+          </div>
+          <div class="field">
+            <p class="field-label">Participantes esperados (opcional)</p>
+            <div class="stepper">
+              <button type="button" id="partMinus">–</button>
+              <input type="text" id="partInput" value="20" inputmode="numeric">
+              <button type="button" id="partPlus">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="join-card">
+          <b>Como os participantes entram:</b> envie este mesmo link para a turma (WhatsApp, e-mail ou QR code na tela) e peça para escolherem "Sou participante" ao abrir. Eles só verão a pergunta quando você clicar em Iniciar.
+        </div>
+
+        <div style="margin-top: 26px;">
+          <button class="btn btn-primary" id="btnStartSession" type="button">Iniciar sessão</button>
+        </div>
+      </section>
+
+      <!-- ---------- PRESENTER: LIVE ---------- -->
+      <section id="viewPresenterLive" hidden>
+        <div class="progress-row">
+          <span class="progress-text" id="progressText">Pergunta 1 de 10</span>
+          <span class="respond-count" id="respondCount">0 respostas</span>
+        </div>
+
+        <div class="q-card" id="qCard">
+          <div class="q-top">
+            <span class="badge-anchor" id="anchorBadge" hidden>Âncora</span>
+            <span class="q-number" id="qNumber">Q1</span>
+          </div>
+          <h2 class="q-title" id="qTitle"></h2>
+          <p class="q-context" id="qContext"></p>
+
+          <div class="opt-bars" id="optBars"></div>
+
+          <div id="revealArea">
+            <button class="btn btn-secondary" id="btnReveal" type="button">Revelar gabarito</button>
+            <div class="concept-box" id="conceptBox" hidden style="margin-top:18px;">
+              <b>Conceito-alvo</b>
+              <span id="conceptText"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-secondary" id="btnEndSession" type="button">Encerrar sessão</button>
+          <button class="btn btn-pink" id="btnNext" type="button">Próxima →</button>
+        </div>
+      </section>
+
+      <!-- ---------- PRESENTER: DONE ---------- -->
+      <section id="viewPresenterDone" hidden>
+        <div class="center-stage">
+          <span class="emoji">✅</span>
+          <h1>Sessão encerrada</h1>
+          <p class="lede" style="margin:0 auto 24px;">Bom trabalho. Veja a evolução ou inicie a próxima rodada.</p>
+          <button class="btn btn-primary" id="btnGoEvolutionFromDone" type="button">Ver evolução Manhã × Tarde</button>
+          <div style="height:12px;"></div>
+          <button class="btn btn-secondary" id="btnNewSessionFromDone" type="button">Iniciar nova sessão</button>
+        </div>
+      </section>
+
+      <!-- ---------- PRESENTER: EVOLUTION ---------- -->
+      <section id="viewEvolution" hidden>
+        <p class="eyebrow">Fechamento</p>
+        <h1>Evolução — Manhã × Tarde</h1>
+        <p class="lede">Comparativo das três perguntas-âncora. Projete esta tela para a turma ver a própria evolução.</p>
+        <div id="evoList" style="margin-top:26px;"></div>
+        <button class="btn btn-secondary" id="btnBackFromEvolution" type="button">← Voltar</button>
+      </section>
+
+      <!-- ---------- PARTICIPANT: LOBBY ---------- -->
+      <section id="viewParticipantLobby" hidden>
+        <div class="center-stage">
+          <div class="spinner"></div>
+          <h1>Você está dentro</h1>
+          <p class="lede" style="margin:0 auto;">Aguardando o apresentador iniciar o quiz diagnóstico. Mantenha esta tela aberta.</p>
+        </div>
+      </section>
+
+      <!-- ---------- PARTICIPANT: QUESTION ---------- -->
+      <section id="viewParticipantQuestion" hidden>
+        <div class="progress-row">
+          <span class="progress-text" id="pProgressText">Pergunta 1 de 10</span>
+          <span class="respond-count" id="pRespondCount"></span>
+        </div>
+
+        <div id="pStatusBanner"></div>
+
+        <div class="q-card">
+          <div class="q-top">
+            <span class="badge-anchor" id="pAnchorBadge" hidden>Âncora</span>
+            <span class="q-number" id="pQNumber">Q1</span>
+          </div>
+          <h2 class="q-title" id="pQTitle"></h2>
+          <p class="q-context" id="pQContext"></p>
+
+          <div class="tap-options" id="tapOptions"></div>
+
+          <div class="concept-box" id="pConceptBox" hidden style="margin-top:20px;">
+            <b>Conceito-alvo</b>
+            <span id="pConceptText"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- PARTICIPANT: DONE ---------- -->
+      <section id="viewParticipantDone" hidden>
+        <div class="center-stage">
+          <span class="emoji">🎉</span>
+          <h1>Valeu pela participação!</h1>
+          <p class="lede" style="margin:0 auto;">Essa rodada terminou. Fique de olho na tela do apresentador.</p>
+          <div class="score-pill" id="pScorePill" hidden></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="foot">Playbook do Facilitador · Finanças para Não Financeiros — Vendemmia</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var SUPABASE_URL = "https://bhttwhjbaoakgdqmnflb.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_cCk6qNapo3KXTVhyv7B5ZA_JcTOnMad";
+
+  var QUESTIONS = [
+    { id: 1, anchor: true,
+      title: "Lucro é a mesma coisa que dinheiro em caixa?",
+      context: "A unidade de Trading fechou o mês com lucro de R$ 200 mil na DRE. Dá para afirmar que há R$ 200 mil a mais na conta da empresa?",
+      options: [
+        "Sim, lucro e saldo em caixa são a mesma coisa",
+        "Não necessariamente — o lucro é apurado por competência e pode haver vendas ainda não recebidas",
+        "Sim, desde que não haja empréstimos",
+        "Não, porque o lucro é sempre menor que o caixa"
+      ],
+      correct: 1,
+      concept: "Competência ≠ caixa. É o pilar do dia. A alternativa (a) é o erro mais comum do não financeiro."
+    },
+    { id: 2, anchor: false,
+      title: "Salário do operador de empilhadeira é custo ou despesa?",
+      context: "Aquele que movimenta a carga dos clientes no armazém.",
+      options: [
+        "Despesa administrativa",
+        "Custo do serviço prestado",
+        "Investimento",
+        "Não entra na DRE"
+      ],
+      correct: 1,
+      concept: "Mão de obra ligada à operação é custo, não despesa. No 4PL isso é sensível porque grande parte da folha é operacional."
+    },
+    { id: 3, anchor: true,
+      title: "Comprar uma empilhadeira derruba o resultado do mês?",
+      context: "A Vendemmia compra uma empilhadeira por R$ 150 mil à vista. Como isso impacta a DRE no mês da compra?",
+      options: [
+        "Reduz o resultado em R$ 150 mil imediatamente",
+        "Não integralmente — vira ativo no balanço e afeta o resultado aos poucos, via depreciação",
+        "Aumenta a receita",
+        "É lançado como despesa financeira"
+      ],
+      correct: 1,
+      concept: "Investimento (CAPEX) vai ao balanço e entra na DRE via depreciação. Um dos descolamentos reusados no Módulo 2."
+    },
+    { id: 4, anchor: true,
+      title: "Na importação por conta e ordem, qual é a receita da Vendemmia?",
+      context: "A Vendemmia nacionaliza a mercadoria para um cliente que é o real adquirente. O que ela reconhece como receita própria?",
+      options: [
+        "O valor total da mercadoria importada",
+        "A remuneração pelo serviço de importação prestado (comissão/spread)",
+        "O valor FOB somado aos impostos",
+        "Nada, porque não há receita"
+      ],
+      correct: 1,
+      concept: "A particularidade da Vendemmia. Em conta e ordem, o valor da mercadoria só transita — não é receita da casa."
+    },
+    { id: 5, anchor: false,
+      title: "Um frete prestado mas não recebido aparece onde?",
+      context: "No momento em que o serviço é prestado, mas o cliente ainda não pagou:",
+      options: [
+        "Só no fluxo de caixa",
+        "Na DRE como receita e no Balanço como contas a receber — ainda não no caixa",
+        "Em nenhum, até o cliente pagar",
+        "Só no balanço"
+      ],
+      correct: 1,
+      concept: "Interligação DRE–balanço–caixa. Mostra o descolamento de contas a receber."
+    },
+    { id: 6, anchor: false,
+      title: "A depreciação da frota sai do caixa todo mês?",
+      context: "",
+      options: [
+        "Sim, é uma saída de dinheiro mensal",
+        "Não — reduz o resultado na DRE, mas não é saída de caixa naquele mês",
+        "Aumenta o valor do caminhão no balanço",
+        "Só existe quando o caminhão é vendido"
+      ],
+      correct: 1,
+      concept: "Despesa não-caixa. Reforça lucro ≠ caixa por outro ângulo."
+    },
+    { id: 7, anchor: false,
+      title: "Faturar mais significa lucrar mais?",
+      context: "",
+      options: [
+        "Sim, faturamento e lucro andam sempre juntos",
+        "Não — o lucro é o que sobra depois de custos, despesas e impostos, não o valor faturado",
+        "Sim, desde que a venda seja à vista",
+        "Isso só vale para o trading"
+      ],
+      correct: 1,
+      concept: "Desfaz a confusão faturamento = lucro, típica de quem vem da ponta comercial ou operacional."
+    },
+    { id: 8, anchor: false,
+      title: "De onde vem a receita no modelo de armazém licenciado?",
+      context: "A Vendemmia homologa e padroniza armazéns parceiros pelo Brasil. A receita desse modelo é essencialmente:",
+      options: [
+        "Receita de armazenagem física da carga",
+        "Receita de serviço/licenciamento pela padronização e homologação do padrão Vendemmia",
+        "Um custo de operação",
+        "Um investimento"
+      ],
+      correct: 1,
+      concept: "Receita tem naturezas diferentes por unidade — operar um galpão é uma coisa, licenciar um padrão é outra."
+    },
+    { id: 9, anchor: false,
+      title: "Como se chama o dinheiro que fica preso na importação?",
+      context: "A empresa paga a mercadoria e os tributos antes de receber do cliente final. Esse intervalo é o:",
+      options: [
+        "Lucro operacional",
+        "Ciclo financeiro / necessidade de capital de giro",
+        "Depreciação",
+        "Margem de contribuição"
+      ],
+      correct: 1,
+      concept: "Conecta a operação logística com a dor real de tesouraria — por que o giro consome caixa mesmo com lucro."
+    },
+    { id: 10, anchor: false,
+      title: "Controladoria e tesouraria: qual a diferença de foco?",
+      context: "",
+      options: [
+        "São a mesma função com nomes diferentes",
+        "Controladoria olha o resultado econômico (competência); tesouraria olha a liquidez/caixa (financeiro)",
+        "Controladoria cuida do caixa e tesouraria dos impostos",
+        "A tesouraria não se preocupa com o futuro"
+      ],
+      correct: 1,
+      concept: "Fecha o Módulo 3 e dá nome às duas lentes que a turma monta durante o dia."
+    }
+  ];
+
+  var QUESTIONS_BY_ID = {};
+  QUESTIONS.forEach(function (q) { QUESTIONS_BY_ID[q.id] = q; });
+  var ANCHOR_IDS = QUESTIONS.filter(function (q) { return q.anchor; }).map(function (q) { return q.id; });
+  var LETTERS = ["A", "B", "C", "D"];
+
+  function genId() {
+    return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+  }
+
+  function lsGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function lsSet(key, val) { try { localStorage.setItem(key, val); } catch (e) {} }
+
+  var viewerId = lsGet("vd-quiz-viewer-id");
+  if (!viewerId) { viewerId = "v" + genId(); lsSet("vd-quiz-viewer-id", viewerId); }
+
+  var participantId = lsGet("vd-quiz-participant-id");
+  var participantName = lsGet("vd-quiz-participant-name");
+
+  var el = {};
+  [
+    "topbarMeta", "pillRound", "btnEvolution", "btnSwitchRole",
+    "viewConnecting", "viewUnavailable", "viewRoleChooser", "cardPresenter", "cardParticipant",
+    "viewNameCapture", "nameInput", "btnNameContinue",
+    "viewPresenterSetup", "roundSeg", "modeSeg", "partInput", "partMinus", "partPlus", "btnStartSession",
+    "viewPresenterLive", "progressText", "respondCount", "qCard", "anchorBadge", "qNumber", "qTitle", "qContext",
+    "optBars", "revealArea", "btnReveal", "conceptBox", "conceptText", "btnEndSession", "btnNext",
+    "viewPresenterDone", "btnGoEvolutionFromDone", "btnNewSessionFromDone",
+    "viewEvolution", "evoList", "btnBackFromEvolution",
+    "viewParticipantLobby",
+    "viewParticipantQuestion", "pProgressText", "pRespondCount", "pStatusBanner",
+    "pAnchorBadge", "pQNumber", "pQTitle", "pQContext", "tapOptions", "pConceptBox", "pConceptText",
+    "viewParticipantDone", "pScorePill"
+  ].forEach(function (id) { el[id] = document.getElementById(id); });
+
+  var ALL_VIEWS = ["viewConnecting", "viewUnavailable", "viewRoleChooser", "viewNameCapture", "viewPresenterSetup",
+    "viewPresenterLive", "viewPresenterDone", "viewEvolution", "viewParticipantLobby",
+    "viewParticipantQuestion", "viewParticipantDone"];
+
+  function showView(name) {
+    ALL_VIEWS.forEach(function (v) { el[v].hidden = (v !== name); });
+    el.topbarMeta.hidden = (name === "viewConnecting" || name === "viewUnavailable" || name === "viewRoleChooser" || name === "viewNameCapture");
+    el.btnEvolution.hidden = !(role === "presenter" && name !== "viewEvolution");
+  }
+
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+  // ---------- role ----------
+  var role = lsGet("vd-quiz-role"); // 'presenter' | 'participant' | null
+
+  el.cardPresenter.addEventListener("click", function () { setRole("presenter"); });
+  el.cardParticipant.addEventListener("click", function () { setRole("participant"); });
+  el.btnSwitchRole.addEventListener("click", function () {
+    lsSet("vd-quiz-role", "");
+    role = null;
+    teardownAll();
+    showView("viewRoleChooser");
+  });
+
+  function setRole(r) {
+    role = r;
+    lsSet("vd-quiz-role", r);
+    if (r === "presenter") { enterPresenter(); } else { startParticipantFlow(); }
+  }
+
+  function startParticipantFlow() {
+    if (participantId && participantName) { enterParticipant(); return; }
+    el.nameInput.value = participantName || "";
+    showView("viewNameCapture");
+    el.nameInput.focus();
+  }
+
+  function submitName() {
+    var name = (el.nameInput.value || "").trim();
+    if (!name) { el.nameInput.focus(); return; }
+    el.btnNameContinue.disabled = true;
+    showView("viewConnecting");
+    ensureParticipant(name).then(function () {
+      enterParticipant();
+    }).catch(function () {
+      showView("viewUnavailable");
+    }).then(function () { el.btnNameContinue.disabled = false; });
+  }
+
+  el.btnNameContinue.addEventListener("click", submitName);
+  el.nameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") submitName(); });
+
+  function ensureParticipant(name) {
+    return supabase.from("participants")
+      .upsert({ viewer_id: viewerId, name: name }, { onConflict: "viewer_id" })
+      .select()
+      .single()
+      .then(function (res) {
+        if (res.error) throw res.error;
+        participantId = res.data.id;
+        participantName = res.data.name;
+        lsSet("vd-quiz-participant-id", participantId);
+        lsSet("vd-quiz-participant-name", participantName);
+        return res.data;
+      });
+  }
+
+  // ---------- supabase bootstrap ----------
+  var supabase = null;
+  try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch (e) { supabase = null; }
+
+  var unsubs = [];
+  function teardownAll() { unsubs.forEach(function (u) { try { u(); } catch (e) {} }); unsubs = []; }
+
+  function getLiveState() { return supabase.from("live_state").select("*").eq("id", 1).single(); }
+  function updateLiveState(patch) { return supabase.from("live_state").update(patch).eq("id", 1); }
+
+  function subscribeLiveState(cb) {
+    function refresh() {
+      getLiveState().then(function (res) { cb(res.error ? null : res.data); });
+    }
+    var channel = supabase.channel("live_state_" + genId())
+      .on("postgres_changes", { event: "*", schema: "public", table: "live_state", filter: "id=eq.1" }, refresh)
+      .subscribe();
+    refresh();
+    return function () { supabase.removeChannel(channel); };
+  }
+
+  function subscribeTally(sessionCode, questionId, cb) {
+    function refresh() {
+      supabase.from("answers").select("option_index")
+        .eq("session_code", sessionCode).eq("question_id", questionId)
+        .then(function (res) { cb(res.error ? [] : res.data); });
+    }
+    var channel = supabase.channel("answers_" + sessionCode + "_" + questionId)
+      .on("postgres_changes", { event: "*", schema: "public", table: "answers", filter: "session_code=eq." + sessionCode }, refresh)
+      .subscribe();
+    refresh();
+    return function () { supabase.removeChannel(channel); };
+  }
+
+  function subscribeMyAnswer(sessionCode, questionId, pId, cb) {
+    function refresh() {
+      supabase.from("answers").select("*")
+        .eq("session_code", sessionCode).eq("question_id", questionId).eq("participant_id", pId)
+        .maybeSingle()
+        .then(function (res) { cb(res.error ? null : res.data); });
+    }
+    var channel = supabase.channel("myanswer_" + sessionCode + "_" + questionId + "_" + pId)
+      .on("postgres_changes", { event: "*", schema: "public", table: "answers", filter: "participant_id=eq." + pId }, refresh)
+      .subscribe();
+    refresh();
+    return function () { supabase.removeChannel(channel); };
+  }
+
+  function submitAnswer(sessionCode, round, q, optionIndex) {
+    return supabase.from("answers").upsert({
+      session_code: sessionCode,
+      round: round,
+      question_id: q.id,
+      participant_id: participantId,
+      option_index: optionIndex,
+      is_correct: optionIndex === q.correct
+    }, { onConflict: "session_code,question_id,participant_id" });
+  }
+
+  if (!supabase) {
+    showView("viewUnavailable");
+  } else if (role === "presenter") {
+    enterPresenter();
+  } else if (role === "participant") {
+    startParticipantFlow();
+  } else {
+    showView("viewRoleChooser");
+  }
+
+  // ================= PRESENTER =================
+
+  var presenterSession = null; // last known live_state row
+  var presenterTallyUnsub = null;
+  var currentTallyCounts = [0, 0, 0, 0];
+
+  function enterPresenter() {
+    teardownAll();
+    el.pillRound.hidden = true;
+    var unsub = subscribeLiveState(function (data) {
+      presenterSession = data;
+      renderPresenter();
+    });
+    unsubs.push(unsub);
+  }
+
+  function renderPresenter() {
+    if (!presenterSession || presenterSession.phase === "lobby") {
+      showView("viewPresenterSetup");
+      return;
+    }
+    if (presenterSession.phase === "done") {
+      showView("viewPresenterDone");
+      return;
+    }
+    // phase === 'question'
+    el.pillRound.hidden = false;
+    el.pillRound.textContent = presenterSession.round === "manha" ? "Rodada · Manhã" : "Rodada · Tarde";
+    el.pillRound.className = "pill " + (presenterSession.round === "manha" ? "round-manha" : "round-tarde");
+    showView("viewPresenterLive");
+    renderPresenterQuestion();
+  }
+
+  el.roundSeg.addEventListener("click", function (e) {
+    var btn = e.target.closest(".seg-btn");
+    if (!btn) return;
+    Array.prototype.forEach.call(el.roundSeg.children, function (b) { b.classList.toggle("active", b === btn); });
+  });
+  el.modeSeg.addEventListener("click", function (e) {
+    var btn = e.target.closest(".seg-btn");
+    if (!btn) return;
+    Array.prototype.forEach.call(el.modeSeg.children, function (b) {
+      b.classList.toggle("active", b === btn);
+      b.classList.toggle("pink", b === btn && b.dataset.mode === "ancora");
+    });
+  });
+  el.partMinus.addEventListener("click", function () { el.partInput.value = clamp((parseInt(el.partInput.value, 10) || 0) - 1, 0, 500); });
+  el.partPlus.addEventListener("click", function () { el.partInput.value = clamp((parseInt(el.partInput.value, 10) || 0) + 1, 0, 500); });
+
+  el.btnStartSession.addEventListener("click", function () {
+    var round = el.roundSeg.querySelector(".seg-btn.active").dataset.round;
+    var mode = el.modeSeg.querySelector(".seg-btn.active").dataset.mode;
+    var participantes = clamp(parseInt(el.partInput.value, 10) || 0, 0, 500);
+    var order = (mode === "ancora" ? QUESTIONS.filter(function (q) { return q.anchor; }) : QUESTIONS).map(function (q) { return q.id; });
+    var sessionCode = genId();
+    el.btnStartSession.disabled = true;
+    updateLiveState({
+      phase: "question",
+      round: round,
+      mode: mode,
+      order_ids: order,
+      current_index: 0,
+      revealed: false,
+      session_code: sessionCode,
+      participantes_esperados: participantes,
+      started_at: new Date().toISOString()
+    }).then(function (res) {
+      if (res.error) { alert("Não foi possível iniciar a sessão. Confira se o schema do Supabase foi criado (tabela live_state) e tente de novo."); }
+    }).then(function () { el.btnStartSession.disabled = false; });
+  });
+
+  function currentQuestion() {
+    if (!presenterSession) return null;
+    var qid = presenterSession.order_ids[presenterSession.current_index];
+    return QUESTIONS_BY_ID[qid];
+  }
+
+  function renderPresenterQuestion() {
+    var q = currentQuestion();
+    if (!q) return;
+
+    el.progressText.textContent = "Pergunta " + (presenterSession.current_index + 1) + " de " + presenterSession.order_ids.length;
+    el.anchorBadge.hidden = !q.anchor;
+    el.qNumber.textContent = "Q" + q.id;
+    el.qTitle.textContent = q.title;
+    el.qContext.textContent = q.context || "";
+    el.qContext.style.display = q.context ? "" : "none";
+
+    el.btnReveal.textContent = presenterSession.revealed ? "Gabarito revelado" : "Revelar gabarito";
+    el.btnReveal.disabled = !!presenterSession.revealed;
+    el.conceptBox.hidden = !presenterSession.revealed;
+    el.conceptText.textContent = q.concept;
+    el.btnNext.textContent = (presenterSession.current_index === presenterSession.order_ids.length - 1) ? "Encerrar →" : "Próxima →";
+
+    if (presenterTallyUnsub) { presenterTallyUnsub(); presenterTallyUnsub = null; }
+    currentTallyCounts = [0, 0, 0, 0];
+    renderOptBars(q, currentTallyCounts, presenterSession.revealed);
+
+    presenterTallyUnsub = subscribeTally(presenterSession.session_code, q.id, function (rows) {
+      var counts = [0, 0, 0, 0];
+      rows.forEach(function (data) {
+        if (data && typeof data.option_index === "number" && data.option_index >= 0 && data.option_index < 4) {
+          counts[data.option_index]++;
+        }
+      });
+      currentTallyCounts = counts;
+      var total = counts[0] + counts[1] + counts[2] + counts[3];
+      el.respondCount.textContent = total + (total === 1 ? " resposta" : " respostas");
+      renderOptBars(q, counts, presenterSession.revealed);
+    });
+  }
+
+  function renderOptBars(q, counts, revealed) {
+    var total = counts[0] + counts[1] + counts[2] + counts[3];
+    el.optBars.innerHTML = "";
+    q.options.forEach(function (text, i) {
+      var pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+      var row = document.createElement("div");
+      row.className = "opt-bar-row";
+      var isCorrect = revealed && i === q.correct;
+      row.innerHTML =
+        '<span class="opt-letter">' + LETTERS[i] + '</span>' +
+        '<div class="opt-track"><div class="opt-fill' + (isCorrect ? " correct" : "") + '" style="width:' + pct + '%"></div>' +
+        '<span class="opt-text' + (isCorrect ? " on-correct" : "") + '">' + text + (isCorrect ? " ✔" : "") + '</span></div>' +
+        '<span class="opt-count">' + counts[i] + (total > 0 ? " · " + pct + "%" : "") + '</span>';
+      el.optBars.appendChild(row);
+    });
+  }
+
+  el.btnReveal.addEventListener("click", function () {
+    if (!presenterSession || presenterSession.revealed) return;
+    updateLiveState({ revealed: true }).catch(function () {});
+  });
+
+  el.btnNext.addEventListener("click", function () {
+    if (!presenterSession) return;
+    if (presenterSession.current_index < presenterSession.order_ids.length - 1) {
+      updateLiveState({ current_index: presenterSession.current_index + 1, revealed: false }).catch(function () {});
+    } else {
+      updateLiveState({ phase: "done" }).catch(function () {});
+    }
+  });
+
+  el.btnEndSession.addEventListener("click", function () {
+    if (!confirm("Encerrar a sessão atual? Os celulares dos participantes voltarão para a tela de espera.")) return;
+    updateLiveState({ phase: "done" }).catch(function () {});
+  });
+
+  el.btnNewSessionFromDone.addEventListener("click", function () {
+    updateLiveState({ phase: "lobby" }).catch(function () {});
+  });
+
+  el.btnGoEvolutionFromDone.addEventListener("click", function () { showEvolution(); });
+  el.btnEvolution.addEventListener("click", function () { showEvolution(); });
+  el.btnBackFromEvolution.addEventListener("click", function () { renderPresenter(); });
+
+  function showEvolution() {
+    showView("viewEvolution");
+    el.evoList.innerHTML = "<p style='color:var(--vd-muted);font-size:14px;'>Carregando…</p>";
+    supabase.from("answers").select("round, question_id, is_correct").in("question_id", ANCHOR_IDS)
+      .then(function (res) {
+        var rows = res.data || [];
+        var data = { manha: {}, tarde: {} };
+        rows.forEach(function (r) {
+          var bucket = data[r.round];
+          if (!bucket) return;
+          if (!bucket[r.question_id]) bucket[r.question_id] = { correct: 0, total: 0 };
+          bucket[r.question_id].total++;
+          if (r.is_correct) bucket[r.question_id].correct++;
+        });
+        el.evoList.innerHTML = "";
+        ANCHOR_IDS.forEach(function (id) {
+          var q = QUESTIONS_BY_ID[id];
+          var group = document.createElement("div");
+          group.className = "evo-group";
+          group.innerHTML = '<p class="evo-q-title">Q' + q.id + " — " + q.title + '</p><p class="evo-q-concept">' + q.concept + "</p>";
+          ["manha", "tarde"].forEach(function (roundKey) {
+            var pq = data[roundKey][id];
+            var row = document.createElement("div");
+            row.className = "bar-row";
+            var tag = document.createElement("span");
+            tag.className = "bar-tag";
+            tag.textContent = roundKey === "manha" ? "Manhã" : "Tarde";
+            var track = document.createElement("div");
+            track.className = "bar-track";
+            var fill = document.createElement("div");
+            var value = document.createElement("span");
+            value.className = "bar-value";
+            if (!pq || !pq.total) {
+              fill.className = "bar-fill empty";
+              value.classList.add("empty");
+              value.textContent = "não registrado";
+            } else {
+              var pct = Math.round((pq.correct / pq.total) * 100);
+              fill.className = "bar-fill " + roundKey;
+              fill.style.width = pct + "%";
+              value.textContent = pct + "% (" + pq.correct + "/" + pq.total + ")";
+            }
+            track.appendChild(fill);
+            row.appendChild(tag); row.appendChild(track); row.appendChild(value);
+            group.appendChild(row);
+          });
+          el.evoList.appendChild(group);
+        });
+      });
+  }
+
+  // ================= PARTICIPANT =================
+
+  var participantSession = null;
+  var myVoteUnsub = null;
+  var tallyReadUnsub = null;
+  var myScore = { correct: 0, answered: 0, revealedIds: {} };
+
+  function enterParticipant() {
+    teardownAll();
+    var unsub = subscribeLiveState(function (data) {
+      participantSession = data;
+      renderParticipant();
+    });
+    unsubs.push(unsub);
+  }
+
+  function renderParticipant() {
+    if (myVoteUnsub) { myVoteUnsub(); myVoteUnsub = null; }
+    if (tallyReadUnsub) { tallyReadUnsub(); tallyReadUnsub = null; }
+
+    if (!participantSession || participantSession.phase === "lobby") {
+      el.pillRound.hidden = true;
+      showView("viewParticipantLobby");
+      return;
+    }
+    if (participantSession.phase === "done") {
+      el.pillRound.hidden = true;
+      showView("viewParticipantDone");
+      if (myScore.answered > 0) {
+        el.pScorePill.hidden = false;
+        el.pScorePill.textContent = "Você acertou " + myScore.correct + " de " + myScore.answered;
+      } else {
+        el.pScorePill.hidden = true;
+      }
+      return;
+    }
+
+    el.pillRound.hidden = false;
+    el.pillRound.textContent = participantSession.round === "manha" ? "Rodada · Manhã" : "Rodada · Tarde";
+    el.pillRound.className = "pill " + (participantSession.round === "manha" ? "round-manha" : "round-tarde");
+    showView("viewParticipantQuestion");
+    renderParticipantQuestion();
+  }
+
+  function pQuestion() {
+    if (!participantSession) return null;
+    var qid = participantSession.order_ids[participantSession.current_index];
+    return QUESTIONS_BY_ID[qid];
+  }
+
+  function renderParticipantQuestion() {
+    var q = pQuestion();
+    if (!q) return;
+
+    el.pProgressText.textContent = "Pergunta " + (participantSession.current_index + 1) + " de " + participantSession.order_ids.length;
+    el.pAnchorBadge.hidden = !q.anchor;
+    el.pQNumber.textContent = "Q" + q.id;
+    el.pQTitle.textContent = q.title;
+    el.pQContext.textContent = q.context || "";
+    el.pQContext.style.display = q.context ? "" : "none";
+
+    var revealed = !!participantSession.revealed;
+    el.pConceptBox.hidden = !revealed;
+    el.pConceptText.textContent = q.concept;
+
+    myVoteUnsub = subscribeMyAnswer(participantSession.session_code, q.id, participantId, function (myAnswer) {
+      var myOption = myAnswer ? myAnswer.option_index : undefined;
+      renderTapOptions(q, myOption, revealed);
+
+      if (revealed && myOption !== undefined && !myScore.revealedIds[q.id]) {
+        myScore.revealedIds[q.id] = true;
+        myScore.answered++;
+        if (myOption === q.correct) myScore.correct++;
+      }
+
+      if (!revealed) {
+        el.pStatusBanner.innerHTML = myOption === undefined
+          ? '<div class="status-banner">Toque em uma alternativa</div>'
+          : '<div class="status-banner pink">Resposta registrada ✓ — aguarde o apresentador</div>';
+      } else {
+        el.pStatusBanner.innerHTML = myOption === undefined
+          ? '<div class="status-banner">Gabarito revelado — você não respondeu a tempo</div>'
+          : (myOption === q.correct
+            ? '<div class="status-banner pink">Você acertou! 🎉</div>'
+            : '<div class="status-banner">Não foi dessa vez — veja o conceito abaixo</div>');
+      }
+    });
+
+    tallyReadUnsub = subscribeTally(participantSession.session_code, q.id, function (rows) {
+      el.pRespondCount.textContent = rows.length + (rows.length === 1 ? " pessoa respondeu" : " pessoas responderam");
+    });
+  }
+
+  function renderTapOptions(q, myOption, revealed) {
+    el.tapOptions.innerHTML = "";
+    q.options.forEach(function (text, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      var cls = "tap-opt";
+      if (i === myOption) cls += " selected";
+      if (revealed) {
+        cls += " locked";
+        if (i === q.correct) cls += " reveal-correct";
+        else if (i === myOption) cls += " reveal-wrong-picked";
+      }
+      btn.className = cls;
+      btn.innerHTML = '<span class="opt-letter">' + LETTERS[i] + '</span><span class="tap-opt-text">' + text + "</span>";
+      if (!revealed) {
+        btn.addEventListener("click", function () {
+          submitAnswer(participantSession.session_code, participantSession.round, q, i).catch(function () {});
+        });
+      }
+      el.tapOptions.appendChild(btn);
+    });
+  }
+
+})();
+</script>
