@@ -876,25 +876,25 @@
 
   el.btnReveal.addEventListener("click", function () {
     if (!presenterSession || presenterSession.revealed) return;
-    updateLiveState({ revealed: true }).catch(function () {});
+    updateLiveState({ revealed: true }).then(null, function () {});
   });
 
   el.btnNext.addEventListener("click", function () {
     if (!presenterSession) return;
     if (presenterSession.current_index < presenterSession.order_ids.length - 1) {
-      updateLiveState({ current_index: presenterSession.current_index + 1, revealed: false }).catch(function () {});
+      updateLiveState({ current_index: presenterSession.current_index + 1, revealed: false }).then(null, function () {});
     } else {
-      updateLiveState({ phase: "done" }).catch(function () {});
+      updateLiveState({ phase: "done" }).then(null, function () {});
     }
   });
 
   el.btnEndSession.addEventListener("click", function () {
     if (!confirm("Encerrar a sessão atual? Os celulares dos participantes voltarão para a tela de espera.")) return;
-    updateLiveState({ phase: "done" }).catch(function () {});
+    updateLiveState({ phase: "done" }).then(null, function () {});
   });
 
   el.btnNewSessionFromDone.addEventListener("click", function () {
-    updateLiveState({ phase: "lobby" }).catch(function () {});
+    updateLiveState({ phase: "lobby" }).then(null, function () {});
   });
 
   el.btnGoEvolutionFromDone.addEventListener("click", function () { showEvolution(); });
@@ -1061,7 +1061,7 @@
       btn.innerHTML = '<span class="opt-letter">' + LETTERS[i] + '</span><span class="tap-opt-text">' + text + "</span>";
       if (!revealed) {
         btn.addEventListener("click", function () {
-          submitAnswer(participantSession.session_code, participantSession.round, q, i).catch(function () {});
+          submitAnswer(participantSession.session_code, participantSession.round, q, i).then(null, function () {});
         });
       }
       el.tapOptions.appendChild(btn);
