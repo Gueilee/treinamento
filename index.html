@@ -210,6 +210,20 @@
     color: var(--vd-purple); background: var(--vd-panel); padding: 10px 22px; border-radius: 999px;
   }
 
+  /* ---------- participant recap ---------- */
+  .recap-list { display: flex; flex-direction: column; gap: 10px; margin-top: 32px; text-align: left; }
+  .recap-item {
+    background: var(--vd-white); border: 1px solid var(--vd-border); border-left: 4px solid var(--vd-border);
+    border-radius: 4px 12px 12px 4px; padding: 14px 18px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .recap-item.correct { border-left-color: var(--vd-purple); }
+  .recap-item.wrong { border-left-color: var(--vd-pink); }
+  .recap-icon { font-family: var(--font-display); font-size: 17px; flex-shrink: 0; margin-top: 1px; width: 20px; text-align: center; }
+  .recap-body { flex: 1; min-width: 0; }
+  .recap-q { font-family: var(--font-bold); font-size: 13.5px; color: var(--vd-ink); margin: 0 0 4px; }
+  .recap-answer { font-size: 12.5px; color: var(--vd-muted); margin: 4px 0 0; line-height: 1.5; }
+  .recap-answer b { color: var(--vd-ink); font-family: var(--font-bold); }
+
   /* ---------- evolution ---------- */
   .evo-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
   @media (max-width: 620px) { .evo-stats-row { grid-template-columns: 1fr; } }
@@ -264,6 +278,7 @@
 </style>
 </head>
 <body>
+
 
 <div class="app">
   <div class="topbar">
@@ -441,9 +456,10 @@
         <div class="center-stage">
           <span class="emoji">🎉</span>
           <h1>Valeu pela participação!</h1>
-          <p class="lede" style="margin:0 auto;">Essa rodada terminou. Fique de olho na tela do apresentador.</p>
+          <p class="lede" style="margin:0 auto;">Essa rodada terminou. Veja abaixo como você foi em cada pergunta.</p>
           <div class="score-pill" id="pScorePill" hidden></div>
         </div>
+        <div class="recap-list" id="pRecapList"></div>
       </section>
 
     </div>
@@ -613,7 +629,7 @@
     "viewParticipantLobby",
     "viewParticipantQuestion", "pProgressText", "pRespondCount", "pStatusBanner",
     "pAnchorBadge", "pQNumber", "pQTitle", "pQContext", "tapOptions", "pConceptBox", "pConceptText",
-    "viewParticipantDone", "pScorePill"
+    "viewParticipantDone", "pScorePill", "pRecapList"
   ].forEach(function (id) { el[id] = document.getElementById(id); });
 
   var ALL_VIEWS = ["viewConnecting", "viewUnavailable", "viewNameCapture", "viewPresenterSetup",
@@ -1064,7 +1080,6 @@
   var participantSession = null;
   var myVoteUnsub = null;
   var tallyReadUnsub = null;
-  var myScore = { correct: 0, answered: 0, revealedIds: {} };
 
   function enterParticipant() {
     teardownAll();
@@ -1087,12 +1102,7 @@
     if (participantSession.phase === "done") {
       el.pillRound.hidden = true;
       showView("viewParticipantDone");
-      if (myScore.answered > 0) {
-        el.pScorePill.hidden = false;
-        el.pScorePill.textContent = "Você acertou " + myScore.correct + " de " + myScore.answered;
-      } else {
-        el.pScorePill.hidden = true;
-      }
+      renderParticipantDone();
       return;
     }
 
@@ -1107,6 +1117,51 @@
     if (!participantSession) return null;
     var qid = participantSession.order_ids[participantSession.current_index];
     return QUESTIONS_BY_ID[qid];
+  }
+
+  function renderParticipantDone() {
+    el.pScorePill.hidden = true;
+    el.pRecapList.innerHTML = "";
+    var sessionCode = participantSession && participantSession.session_code;
+    if (!sessionCode || !participantId) return;
+
+    supabase.from("answers").select("question_id, option_index, is_correct")
+      .eq("session_code", sessionCode).eq("participant_id", participantId)
+      .then(function (res) {
+        var rows = res.data || [];
+        var byQuestion = {};
+        rows.forEach(function (r) { byQuestion[r.question_id] = r; });
+
+        var total = rows.length;
+        var correctCount = rows.filter(function (r) { return r.is_correct; }).length;
+        if (total > 0) {
+          el.pScorePill.hidden = false;
+          el.pScorePill.textContent = "Você acertou " + correctCount + " de " + total;
+        }
+
+        var order = (participantSession.order_ids && participantSession.order_ids.length)
+          ? participantSession.order_ids
+          : QUESTIONS.map(function (q) { return q.id; });
+
+        el.pRecapList.innerHTML = order.map(function (qid) {
+          var q = QUESTIONS_BY_ID[qid];
+          var a = byQuestion[qid];
+          if (!a) {
+            return '<div class="recap-item"><span class="recap-icon" style="color:var(--vd-muted)">–</span><div class="recap-body">' +
+              '<p class="recap-q">Q' + q.id + " — " + escapeHtml(q.title) + '</p>' +
+              '<p class="recap-answer">Você não respondeu a tempo.</p></div></div>';
+          }
+          if (a.is_correct) {
+            return '<div class="recap-item correct"><span class="recap-icon" style="color:var(--vd-purple)">✔</span><div class="recap-body">' +
+              '<p class="recap-q">Q' + q.id + " — " + escapeHtml(q.title) + '</p>' +
+              '<p class="recap-answer">Sua resposta: <b>' + escapeHtml(q.options[a.option_index]) + '</b></p></div></div>';
+          }
+          return '<div class="recap-item wrong"><span class="recap-icon" style="color:var(--vd-pink)">✕</span><div class="recap-body">' +
+            '<p class="recap-q">Q' + q.id + " — " + escapeHtml(q.title) + '</p>' +
+            '<p class="recap-answer">Sua resposta: <b>' + escapeHtml(q.options[a.option_index]) + '</b> · Certa: <b>' + escapeHtml(q.options[q.correct]) + '</b></p>' +
+            '<p class="recap-answer">' + escapeHtml(q.concept) + '</p></div></div>';
+        }).join("");
+      });
   }
 
   function renderParticipantQuestion() {
@@ -1127,12 +1182,6 @@
     myVoteUnsub = subscribeMyAnswer(participantSession.session_code, q.id, participantId, function (myAnswer) {
       var myOption = myAnswer ? myAnswer.option_index : undefined;
       renderTapOptions(q, myOption, revealed);
-
-      if (revealed && myOption !== undefined && !myScore.revealedIds[q.id]) {
-        myScore.revealedIds[q.id] = true;
-        myScore.answered++;
-        if (myOption === q.correct) myScore.correct++;
-      }
 
       if (!revealed) {
         el.pStatusBanner.innerHTML = myOption === undefined
