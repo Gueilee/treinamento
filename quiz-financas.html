@@ -634,8 +634,21 @@
   var role = lsGet(IS_PRESENTER_KEY) === "1" ? "presenter" : "participant";
 
   function startParticipantFlow() {
-    if (participantId && participantName) { enterParticipant(); return; }
-    el.nameInput.value = participantName || "";
+    if (participantName) {
+      // Reconfirma o participante no banco a cada entrada (não só na primeira vez).
+      // Isso evita ficar com um participant_id "fantasma" salvo no navegador caso
+      // o banco tenha sido resetado entre uma sessão e outra — sem isso, o clique
+      // na alternativa falha silenciosamente por violar a referência a um
+      // participante que não existe mais.
+      showView("viewConnecting");
+      ensureParticipant(participantName).then(function () {
+        enterParticipant();
+      }).catch(function () {
+        showView("viewUnavailable");
+      });
+      return;
+    }
+    el.nameInput.value = "";
     showView("viewNameCapture");
     el.nameInput.focus();
   }
