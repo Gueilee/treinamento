@@ -92,18 +92,6 @@
   }
   .lede { font-size: 16.5px; line-height: 1.55; color: var(--vd-muted); max-width: 62ch; margin: 0; }
 
-  /* ---------- role chooser ---------- */
-  .role-grid { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 620px) { .role-grid { grid-template-columns: 1fr; } }
-  .role-card {
-    background: var(--vd-white); border: 1.5px solid var(--vd-border); border-radius: 16px;
-    padding: 26px 24px; text-align: left; cursor: pointer; transition: all 0.15s ease;
-  }
-  .role-card:hover { border-color: var(--vd-purple); box-shadow: 0 8px 20px rgba(66,44,117,0.1); }
-  .role-card .emoji { font-size: 30px; display: block; margin-bottom: 12px; }
-  .role-card h3 { font-family: var(--font-display); font-size: 18px; color: var(--vd-purple); margin: 0 0 6px; }
-  .role-card p { font-size: 13.5px; color: var(--vd-muted); line-height: 1.5; margin: 0; }
-
   /* ---------- setup ---------- */
   .field {
     background: var(--vd-white); border: 1px solid var(--vd-border); border-radius: 14px;
@@ -277,7 +265,6 @@
       <span class="pill live" id="pillLive">Ao vivo</span>
       <span class="pill" id="pillRound"></span>
       <button class="btn-ghost" id="btnEvolution" type="button" hidden>Evolução</button>
-      <button class="btn-ghost" id="btnSwitchRole" type="button">Trocar papel</button>
     </div>
   </div>
 
@@ -298,25 +285,6 @@
           <span class="emoji">📡</span>
           <h1>Não foi possível conectar</h1>
           <p class="lede" style="margin: 0 auto;">Não conseguimos falar com o banco de dados do quiz agora. Recarregue a página; se o problema continuar, avise quem organizou o treinamento.</p>
-        </div>
-      </section>
-
-      <!-- ---------- ROLE CHOOSER ---------- -->
-      <section id="viewRoleChooser" hidden>
-        <p class="eyebrow">Módulo 0 · Diagnóstico ao vivo</p>
-        <h1>Quiz Finanças para Não Financeiros</h1>
-        <p class="lede">Todo mundo responde pelo próprio celular; o resultado aparece ao vivo na tela do apresentador.</p>
-        <div class="role-grid">
-          <button class="role-card" id="cardPresenter" type="button">
-            <span class="emoji">🖥️</span>
-            <h3>Sou o apresentador</h3>
-            <p>Abra aqui no notebook conectado ao projetor. Você controla as perguntas e vê os resultados chegando ao vivo.</p>
-          </button>
-          <button class="role-card" id="cardParticipant" type="button">
-            <span class="emoji">📱</span>
-            <h3>Sou participante</h3>
-            <p>Abra no seu celular. Toque na alternativa quando a pergunta aparecer na tela.</p>
-          </button>
         </div>
       </section>
 
@@ -626,8 +594,8 @@
 
   var el = {};
   [
-    "topbarMeta", "pillRound", "btnEvolution", "btnSwitchRole",
-    "viewConnecting", "viewUnavailable", "viewRoleChooser", "cardPresenter", "cardParticipant",
+    "topbarMeta", "pillRound", "btnEvolution",
+    "viewConnecting", "viewUnavailable",
     "viewNameCapture", "nameInput", "btnNameContinue",
     "viewPresenterSetup", "roundSeg", "modeSeg", "partInput", "partMinus", "partPlus", "btnStartSession",
     "viewPresenterLive", "progressText", "respondCount", "qCard", "anchorBadge", "qNumber", "qTitle", "qContext",
@@ -640,35 +608,29 @@
     "viewParticipantDone", "pScorePill"
   ].forEach(function (id) { el[id] = document.getElementById(id); });
 
-  var ALL_VIEWS = ["viewConnecting", "viewUnavailable", "viewRoleChooser", "viewNameCapture", "viewPresenterSetup",
+  var ALL_VIEWS = ["viewConnecting", "viewUnavailable", "viewNameCapture", "viewPresenterSetup",
     "viewPresenterLive", "viewPresenterDone", "viewEvolution", "viewParticipantLobby",
     "viewParticipantQuestion", "viewParticipantDone"];
 
   function showView(name) {
     ALL_VIEWS.forEach(function (v) { el[v].hidden = (v !== name); });
-    el.topbarMeta.hidden = (name === "viewConnecting" || name === "viewUnavailable" || name === "viewRoleChooser" || name === "viewNameCapture");
+    el.topbarMeta.hidden = (name === "viewConnecting" || name === "viewUnavailable" || name === "viewNameCapture");
     el.btnEvolution.hidden = !(role === "presenter" && name !== "viewEvolution");
   }
 
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
-  // ---------- role ----------
-  var role = lsGet("vd-quiz-role"); // 'presenter' | 'participant' | null
-
-  el.cardPresenter.addEventListener("click", function () { setRole("presenter"); });
-  el.cardParticipant.addEventListener("click", function () { setRole("participant"); });
-  el.btnSwitchRole.addEventListener("click", function () {
-    lsSet("vd-quiz-role", "");
-    role = null;
-    teardownAll();
-    showView("viewRoleChooser");
-  });
-
-  function setRole(r) {
-    role = r;
-    lsSet("vd-quiz-role", r);
-    if (r === "presenter") { enterPresenter(); } else { startParticipantFlow(); }
-  }
+  // ---------- role: definido pelo link, não por escolha na tela ----------
+  // O link normal (sem parâmetro) é sempre participante. Quem abre uma vez com
+  // ?apresentador=1 vira apresentador permanentemente NESTE navegador/dispositivo,
+  // então o link do apresentador só precisa ser usado uma vez por aparelho.
+  var IS_PRESENTER_KEY = "vd-quiz-is-presenter";
+  try {
+    if (new URLSearchParams(location.search).get("apresentador") === "1") {
+      lsSet(IS_PRESENTER_KEY, "1");
+    }
+  } catch (e) {}
+  var role = lsGet(IS_PRESENTER_KEY) === "1" ? "presenter" : "participant";
 
   function startParticipantFlow() {
     if (participantId && participantName) { enterParticipant(); return; }
@@ -772,10 +734,8 @@
     showView("viewUnavailable");
   } else if (role === "presenter") {
     enterPresenter();
-  } else if (role === "participant") {
-    startParticipantFlow();
   } else {
-    showView("viewRoleChooser");
+    startParticipantFlow();
   }
 
   // ================= PRESENTER =================
